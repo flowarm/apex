@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>پلیر موسیقی</title>
+<style>
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Tahoma, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :root {
+    --spring: cubic-bezier(.34, 1.56, .64, 1);
+    --smooth: cubic-bezier(.22, 1, .36, 1);
+  }
+  body { background: #f5f5f5; color: #333; padding-bottom: 160px; overscroll-behavior: none; }
+
+  /* ========== لیست ========== */
+  .song-list { background: #fff; }
+  .song-item {
+    display: flex; align-items: center; padding: 12px 16px;
+    border-bottom: 1px solid #eee; cursor: pointer;
+    transition: background .25s, transform .2s var(--spring);
+  }
+  .song-item:active { background: #f0eaf7; transform: scale(.975); }
+  .song-item.active { background: #f7f3fb; }
+  .song-item.active .song-title { color: #7b5ea7; font-weight: bold; }
+  .song-item.enter { animation: itemIn .5s var(--smooth) backwards; animation-delay: calc(var(--i, 0) * 45ms); }
+  @keyframes itemIn { from { opacity: 0; transform: translateX(-40px) scale(.96); } }
+
+  .menu-btn {
+    background: none; border: none; color: #999; font-size: 1.4rem;
+    cursor: pointer; padding: 8px 10px; margin-left: 4px; line-height: 1;
+    transition: transform .2s var(--spring);
+  }
+  .menu-btn:active { transform: scale(1.4); }
+  .song-info { flex: 1; min-width: 0; text-align: right; padding: 0 12px; }
+  .song-title { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .3s; }
+
+  .cover {
+    width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 1.2rem; position: relative;
+  }
+  .cover img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+
+  /* ========== کپسول ========== */
+  .mini-player {
+    position: fixed;
+    bottom: 14px; left: 14px; right: 14px;
+    height: 64px;
+    background: linear-gradient(135deg, #8c6cb8, #7b5ea7);
+    color: #fff;
+    border-radius: 32px;
+    display: none;
+    align-items: center;
+    padding: 8px 10px;
+    box-shadow: 0 6px 20px rgba(123, 94, 167, .35);
+    z-index: 100;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    transition: transform .45s var(--spring), box-shadow .3s;
+    will-change: transform;
+  }
+  .mini-player.dragging { transition: none !important; }
+  .mini-player.hidden-ui { pointer-events: none; }
+  body.is-playing .mini-player { box-shadow: 0 8px 28px rgba(123, 94, 167, .55); }
+
+  .bp-cover {
+    width: 48px; height: 48px; border-radius: 50%;
+    flex-shrink: 0; position: relative;
+    order: 3; margin-right: 8px;
+    transition: opacity .15s ease;
+  }
+  .bp-cover-inner {
+    position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 1.2rem; background: #9b7cc0;
+    border: 2px solid rgba(255,255,255,.35);
+  }
+  .bp-cover-inner img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  @keyframes discSpin { to { transform: rotate(360deg); } }
+
+  .bp-info {
+    flex: 1; min-width: 0; padding: 0 8px; pointer-events: none; order: 2;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .bp-title {
+    font-size: .9rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: opacity .15s ease;
+  }
+
+  /* اکولایزر */
+  .eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; flex-shrink: 0; }
+  .eq i {
+    display: block; width: 3px; height: 3px; background: #fff; border-radius: 2px;
+    will-change: height;
+  }
+
+  .bp-play-btn {
+    background: rgba(255,255,255,.22);
+    border: none; color: #fff;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; cursor: pointer;
+    position: relative; overflow: hidden;
+    order: 0;
+    transition: transform .2s var(--spring), background .2s;
+  }
+  .bp-play-btn:active { transform: scale(.82); background: rgba(255,255,255,.35); }
+  .bp-play-btn svg, .fp-btn.play-big svg { animation: iconPop .35s var(--spring); }
+  @keyframes iconPop { from { transform: scale(.3) rotate(-40deg); opacity: 0; } }
+
+  /* ========== FAB ========== */
+  .fab {
+    position: fixed; bottom: 90px; left: 20px; width: 56px; height: 56px; border-radius: 50%;
+    background: #7b5ea7; border: none; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(123,94,167,.4); z-index: 90; cursor: pointer;
+    transition: bottom .5s var(--spring), transform .25s var(--spring);
+    animation: fabIn .6s var(--spring) .2s backwards;
+  }
+  .fab:active { transform: scale(.85) rotate(90deg); }
+  @keyframes fabIn { from { transform: scale(0) rotate(-90deg); } }
+
+  /* ========== پلیر تمام‌صفحه ========== */
+  .full-player {
+    position: fixed; inset: 0;
+    background: linear-gradient(160deg, #9b7cc0 0%, #7b5ea7 50%, #5a4080 100%);
+    color: #fff; z-index: 500;
+    display: flex; flex-direction: column;
+    padding: 0 25px 30px;
+    transform: translateY(100%);
+    transition: transform .5s var(--smooth);
+    visibility: hidden;
+    touch-action: none;
+    will-change: transform;
+  }
+  .full-player.show { transform: translateY(0); visibility: visible; }
+  .full-player.dragging { transition: none !important; }
+
+  .fp-scroll {
+    flex: 1; overflow: hidden;
+    display: flex; flex-direction: column;
+    padding-top: 20px; touch-action: none;
+  }
+  .fp-grabber {
+    width: 44px; height: 5px; background: rgba(255,255,255,.55);
+    border-radius: 3px; margin: 0 auto 15px; flex-shrink: 0;
+  }
+  .fp-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px; flex-shrink: 0;
+  }
+  .fp-header button {
+    background: rgba(255,255,255,.15); border: none; color: #fff;
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; overflow: hidden;
+    transition: transform .2s var(--spring);
+  }
+  .fp-header button:active { transform: scale(.85); }
+  .fp-header span { font-size: .85rem; color: rgba(255,255,255,.8); }
+
+  .fp-cover {
+    width: 100%; max-width: 380px; margin: 0 auto 24px;
+    aspect-ratio: 1; border-radius: 20px;
+    box-shadow: none;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; font-size: 5rem; font-weight: 700;
+    flex-shrink: 0;
+    transform: scale(.84);
+    transition: opacity .15s ease, transform .6s var(--spring);
+  }
+  body.is-playing .fp-cover { transform: scale(1); }
+  .fp-cover img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+
+  .fp-title {
+    text-align: center; font-size: 1.3rem; font-weight: 700;
+    margin-bottom: 22px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding: 0 10px; flex-shrink: 0;
+    transition: opacity .15s ease;
+  }
+
+  /* ورود پله‌ای المان‌ها */
+  .full-player.show .fp-cover { animation: riseIn .6s var(--smooth) .05s backwards; }
+  .full-player.show .fp-title { animation: riseIn .6s var(--smooth) .12s backwards; }
+  .full-player.show .progress-container { animation: riseIn .6s var(--smooth) .18s backwards; }
+  .full-player.show .fp-controls { animation: riseIn .6s var(--smooth) .24s backwards; }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(40px); } }
+
+  .pop { animation: popIn .5s var(--spring); }
+  @keyframes popIn { from { opacity: 0; transform: scale(.75); } }
+
+  .progress-container { width: 100%; margin-bottom: 20px; flex-shrink: 0; }
+  .progress-bar {
+    width: 100%; height: 6px; background: rgba(255,255,255,.25);
+    border-radius: 10px; cursor: pointer; position: relative; touch-action: none;
+    transition: height .2s var(--spring);
+  }
+  .progress-bar.active { height: 12px; }
+  .progress-bar::before { content: ''; position: absolute; inset: -14px 0; }
+  .progress-fill { height: 100%; width: 0%; background: #fff; border-radius: 10px; }
+  .progress-times {
+    display: flex; justify-content: space-between;
+    font-size: .75rem; color: rgba(255,255,255,.85);
+    margin-top: 8px; direction: ltr;
+  }
+
+  .fp-controls {
+    display: flex; justify-content: space-around; align-items: center;
+    margin-top: auto; margin-bottom: 10px; direction: ltr; flex-shrink: 0;
+  }
+  .fp-btn {
+    background: none; border: none; color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    width: 55px; height: 55px; border-radius: 50%;
+    position: relative; overflow: hidden;
+    transition: transform .2s var(--spring);
+  }
+  .fp-btn:active { transform: scale(.82); }
+  .fp-btn.play-big {
+    width: 75px; height: 75px; background: #fff;
+    box-shadow: 0 8px 25px rgba(0,0,0,.25);
+  }
+  .fp-btn.play-big:active { transform: scale(.88); }
+
+  .ripple-circle {
+    position: absolute; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+    transform: scale(0); animation: rippleAnim 0.55s ease-out; pointer-events: none;
+  }
+  .fp-btn.play-big .ripple-circle { background: rgba(123, 94, 167, 0.3); }
+  .mini-player .ripple-circle { background: rgba(255, 255, 255, 0.5); }
+  @keyframes rippleAnim { to { transform: scale(2.5); opacity: 0; } }
+
+  .fade-out { opacity: 0 !important; }
+
+  /* ========== مودال‌ها ========== */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 300; display: none;
+    align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .modal.show { display: flex; animation: fadeIn .25s ease; }
+  .modal.show .modal-content { animation: modalPop .45s var(--spring); }
+  @keyframes fadeIn { from { opacity: 0; } }
+  @keyframes modalPop { from { opacity: 0; transform: scale(.8) translateY(30px); } }
+  .modal-content { background: #fff; border-radius: 20px; padding: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+  .modal-content h2 { font-size: 1.1rem; margin-bottom: 15px; text-align: center; }
+  .file-picker {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 22px;
+    border: 2px dashed #7b5ea7; border-radius: 12px; background: #f9f7fc; cursor: pointer; margin-bottom: 12px; text-align: center;
+    transition: transform .2s var(--spring), background .2s;
+  }
+  .file-picker:active { transform: scale(.96); background: #efe9f7; }
+  .file-picker input { display: none; }
+  .file-picker svg { stroke: #7b5ea7; width: 28px; height: 28px; }
+  .file-picker span { color: #7b5ea7; font-weight: 600; font-size: .9rem; }
+  .file-picker small { color: #999; font-size: .72rem; }
+  .pending-list { max-height: 220px; overflow-y: auto; margin-bottom: 8px; }
+  .pending-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; animation: itemIn .4s var(--smooth) backwards; animation-delay: calc(var(--i, 0) * 40ms); }
+  .pending-item .cover { width: 40px; height: 40px; font-size: 1rem; }
+  .pending-item .name { flex: 1; min-width: 0; font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+  .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
+  .modal-buttons button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: .95rem; font-weight: 600; cursor: pointer; transition: transform .2s var(--spring); }
+  .modal-buttons button:active { transform: scale(.93); }
+  .btn-save { background: #7b5ea7; color: #fff; }
+  .btn-save:disabled { background: #ccc; }
+  .btn-cancel { background: #eee; color: #333; }
+
+  .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 199; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .sheet-overlay.show { opacity: 1; pointer-events: auto; }
+  .action-sheet {
+    position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; padding: 20px;
+    transform: translateY(100%); transition: transform .4s var(--smooth); z-index: 200; box-shadow: 0 -5px 20px rgba(0,0,0,.15);
+  }
+  .action-sheet.show { transform: translateY(0); }
+  .action-sheet h3 { font-size: .95rem; margin-bottom: 15px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .action-sheet button { width: 100%; padding: 14px; background: #f5f5f5; border: none; border-radius: 12px; margin-bottom: 10px; font-size: .95rem; color: #333; text-align: right; cursor: pointer; transition: transform .2s var(--spring); }
+  .action-sheet button:active { transform: scale(.96); }
+  .action-sheet button.delete { color: #e53935; font-weight: bold; }
+
+  .empty { text-align: center; padding: 60px 20px; color: #999; background: #fff; animation: popIn .6s var(--spring); }
+</style>
+</head>
+<body>
+
+<div class="song-list" id="songList"></div>
+
+<div class="empty" id="emptyState">
+  <div style="margin-bottom:10px">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </div>
+  <p>لیست پخش خالی است</p>
+</div>
+
+<button class="fab" id="fabBtn" aria-label="افزودن">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<div class="mini-player" id="miniPlayer">
+  <div class="bp-cover" id="miniCover">
+    <div class="bp-cover-inner" id="miniCoverInner"></div>
+  </div>
+  <div class="bp-info">
+    <div class="eq"><i></i><i></i><i></i></div>
+    <div class="bp-title" id="miniTitle">-</div>
+  </div>
+  <button class="bp-play-btn" id="miniPlayBtn"></button>
+</div>
+
+<audio id="audioPlayer" preload="metadata"></audio>
+
+<div class="full-player" id="fullPlayer">
+  <div class="fp-scroll" id="fpScroll">
+    <div class="fp-grabber"></div>
+    <div class="fp-header">
+      <button id="fpClose" aria-label="بستن">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <span>در حال پخش</span>
+      <div style="width:42px"></div>
+    </div>
+    <div class="fp-cover" id="fpCover"></div>
+    <div class="fp-title" id="fpTitle">-</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-times"><span id="currentTime">0:00</span><span id="totalTime">0:00</span></div>
+    </div>
+    <div class="fp-controls">
+      <button class="fp-btn" id="fpPrev">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><polygon points="19 20 9 12 19 4 19 20"/><rect x="4" y="4" width="2.5" height="16" rx="1"/></svg>
+      </button>
+      <button class="fp-btn play-big" id="fpPlayBtn"></button>
+      <button class="fp-btn" id="fpNext">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><polygon points="5 4 15 12 5 20 5 4"/><rect x="17.5" y="4" width="2.5" height="16" rx="1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="addModal">
+  <div class="modal-content">
+    <h2>افزودن آهنگ</h2>
+    <label class="file-picker">
+      <input type="file" id="songFile" accept="audio/*,.mp3,.m4a,.aac,.flac,.wav,.ogg,.opus" multiple>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span>انتخاب فایل(های) صوتی از گوشی</span>
+      <small>MP3، M4A، FLAC، WAV — کاور خودکار استخراج می‌شود</small>
+    </label>
+    <div class="pending-list" id="pendingList"></div>
+    <div class="modal-buttons">
+      <button class="btn-save" id="saveBtn" disabled>ذخیره</button>
+      <button class="btn-cancel" id="cancelBtn">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheetOverlay"></div>
+<div class="action-sheet" id="actionSheet">
+  <h3 id="sheetTitle">عملیات</h3>
+  <button id="sheetPlayBtn">پخش آهنگ</button>
+  <button class="delete" id="sheetDeleteBtn">حذف از لیست</button>
+  <button id="sheetCancelBtn" style="text-align:center;color:#666">لغو</button>
+</div>
+
+<script>
+/* ================= IndexedDB ================= */
+let db = null;
+const STORE = 'songs';
+function openDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('MusicPlayerDB', 1);
+    req.onupgradeneeded = e => {
+      if (!e.target.result.objectStoreNames.contains(STORE))
+        e.target.result.createObjectStore(STORE, { keyPath: 'id' });
+    };
+    req.onsuccess = e => { db = e.target.result; res(); };
+    req.onerror = e => rej(e.target.error);
+  });
+}
+function dbPut(song) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put(song);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error);
+  });
+}
+function dbGetAll() {
+  return new Promise((res, rej) => {
+    const req = db.transaction(STORE, 'readonly').objectStore(STORE).getAll();
+    req.onsuccess = () => res(req.result || []);
+    req.onerror = () => rej(req.error);
+  });
+}
+function dbDelete(id) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+
+/* ================= استخراج کاور از فایل صوتی ================= */
+function readBytes(file, start, len) {
+  const blob = file.slice(start, start + len);
+  if (blob.arrayBuffer) return blob.arrayBuffer().then(b => new Uint8Array(b));
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(new Uint8Array(r.result));
+    r.onerror = () => rej(r.error);
+    r.readAsArrayBuffer(blob);
+  });
+}
+const u32 = (b, o) => ((b[o] * 16777216) + (b[o+1] << 16) + (b[o+2] << 8) + b[o+3]);
+const synchsafe = (b, o) => ((b[o] & 0x7f) << 21) | ((b[o+1] & 0x7f) << 14) | ((b[o+2] & 0x7f) << 7) | (b[o+3] & 0x7f);
+const ascii = (b, o, n) => { let s = ''; for (let i = 0; i < n && o + i < b.length; i++) s += String.fromCharCode(b[o+i]); return s; };
+
+function unsync(b) {
+  const out = new Uint8Array(b.length); let j = 0;
+  for (let i = 0; i < b.length; i++) {
+    out[j++] = b[i];
+    if (b[i] === 0xFF && b[i+1] === 0x00) i++;
+  }
+  return out.subarray(0, j);
+}
+function sniffImage(b, from = 0) {
+  if (b[from] === 0xFF && b[from+1] === 0xD8 && b[from+2] === 0xFF) return 'image/jpeg';
+  if (b[from] === 0x89 && b[from+1] === 0x50 && b[from+2] === 0x4E && b[from+3] === 0x47) return 'image/png';
+  if (b[from] === 0x47 && b[from+1] === 0x49 && b[from+2] === 0x46) return 'image/gif';
+  if (ascii(b, from, 4) === 'RIFF' && ascii(b, from+8, 4) === 'WEBP') return 'image/webp';
+  if (b[from] === 0x42 && b[from+1] === 0x4D) return 'image/bmp';
+  return null;
+}
+function makeImageBlob(bytes) {
+  let type = sniffImage(bytes, 0);
+  let start = 0;
+  if (!type) {
+    const lim = Math.min(bytes.length - 4, 2048);
+    for (let i = 1; i < lim; i++) {
+      const t = sniffImage(bytes, i);
+      if (t && t !== 'image/bmp') { type = t; start = i; break; }
+    }
+  }
+  if (!type) return null;
+  return new Blob([bytes.subarray(start)], { type });
+}
+function parseAPIC(d, ver) {
+  let p = 1;
+  const enc = d[0];
+  if (ver === 2) p = 5;
+  else { while (p < d.length && d[p] !== 0) p++; p++; }
+  const type = d[p++];
+  if (enc === 1 || enc === 2) {
+    while (p + 1 < d.length && !(d[p] === 0 && d[p+1] === 0)) p += 2;
+    p += 2;
+  } else {
+    while (p < d.length && d[p] !== 0) p++;
+    p++;
+  }
+  if (p >= d.length) return null;
+  const blob = makeImageBlob(d.subarray(p));
+  return blob ? { type, blob } : null;
+}
+async function coverFromID3(file) {
+  const h = await readBytes(file, 0, 10);
+  if (ascii(h, 0, 3) !== 'ID3') return null;
+  const ver = h[3], flags = h[5];
+  const size = synchsafe(h, 6);
+  let tag = await readBytes(file, 10, size);
+  if ((flags & 0x80) && ver < 4) tag = unsync(tag);
+  let pos = 0;
+  if (flags & 0x40) pos = ver === 4 ? synchsafe(tag, 0) : u32(tag, 0) + 4;
+  const pics = [];
+  const hdr = ver === 2 ? 6 : 10;
+  while (pos + hdr <= tag.length) {
+    if (tag[pos] === 0) break;
+    let id, fsize, f2 = 0;
+    if (ver === 2) {
+      id = ascii(tag, pos, 3);
+      fsize = (tag[pos+3] << 16) | (tag[pos+4] << 8) | tag[pos+5];
+    } else {
+      id = ascii(tag, pos, 4);
+      fsize = ver === 4 ? synchsafe(tag, pos + 4) : u32(tag, pos + 4);
+      f2 = tag[pos + 9];
+    }
+    if (fsize <= 0 || pos + hdr + fsize > tag.length) break;
+    if (id === 'APIC' || id === 'PIC') {
+      let data = tag.subarray(pos + hdr, pos + hdr + fsize);
+      if (ver === 4) {
+        if (f2 & 0x01) data = data.subarray(4);
+        if (f2 & 0x02) data = unsync(data);
+      }
+      try { const pic = parseAPIC(data, ver === 2 ? 2 : ver); if (pic) pics.push(pic); } catch (e) {}
+    }
+    pos += hdr + fsize;
+  }
+  if (!pics.length) return null;
+  const p = pics.find(x => x.type === 3) || pics[0];
+  return p.blob;
+}
+function imageDecodes(blob) {
+  return new Promise(res => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => { const ok = img.naturalWidth >= 16 && img.naturalHeight >= 16; URL.revokeObjectURL(url); res(ok); };
+    img.onerror = () => { URL.revokeObjectURL(url); res(false); };
+    img.src = url;
+  });
+}
+async function extractCover(file) {
+  try {
+    const c = await coverFromID3(file);
+    if (c && await imageDecodes(c)) return c;
+  } catch (e) { console.warn(e); }
+  return null;
+}
+
+/* ================= ابزار ================= */
+const GRADS = [['#9b7cc0','#7b5ea7'],['#e94560','#c73552'],['#f5a623','#e07b00'],['#22c55e','#15803d'],['#3b82f6','#1d4ed8'],['#ec4899','#be185d'],['#14b8a6','#0f766e']];
+function gradFor(title) {
+  let h = 0; for (let i = 0; i < title.length; i++) h = title.charCodeAt(i) + ((h << 5) - h);
+  const g = GRADS[Math.abs(h) % GRADS.length];
+  return `linear-gradient(135deg, ${g[0]}, ${g[1]})`;
+}
+function esc(t) { return String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function formatTime(s) {
+  if (!isFinite(s) || isNaN(s)) return '0:00';
+  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+const $ = id => document.getElementById(id);
+
+/* ================= State ================= */
+let songs = [];
+let currentId = null;
+let pending = [];
+let sheetSongId = null;
+let isPlayingState = false;
+const audio = $('audioPlayer');
+const miniPlayer = $('miniPlayer');
+const fullPlayer = $('fullPlayer');
+const fpScroll = $('fpScroll');
+
+const ICON_PLAY_MINI = '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><polygon points="7 4 20 12 7 20 7 4"/></svg>';
+const ICON_PAUSE_MINI = '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+const ICON_PLAY_BIG = '<svg width="34" height="34" viewBox="0 0 24 24" fill="#7b5ea7"><polygon points="7 4 20 12 7 20 7 4"/></svg>';
+const ICON_PAUSE_BIG = '<svg width="34" height="34" viewBox="0 0 24 24" fill="#7b5ea7"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+
+const progressBar = $('progressBar'), progressFill = $('progressFill');
+const currentTimeEl = $('currentTime'), totalTimeEl = $('totalTime');
+let seeking = false;
+
+(async function init() {
+  try {
+    await openDB();
+    songs = (await dbGetAll()).sort((a, b) => a.id - b.id);
+    renderSongs(new Set(songs.map(s => s.id)));
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  } catch (e) { alert('خطا در بارگذاری دیتابیس: ' + e.message); }
+  updatePlayButtons(false);
+})();
+
+/* ================= لیست ================= */
+const coverUrls = new Map();
+function coverUrl(song) {
+  if (!song.cover) return null;
+  if (typeof song.cover === 'string') return song.cover;
+  if (!coverUrls.has(song.id)) coverUrls.set(song.id, URL.createObjectURL(song.cover));
+  return coverUrls.get(song.id);
+}
+function coverHTML(song) {
+  const url = coverUrl(song);
+  const letter = esc((song.title || '?').trim().charAt(0).toUpperCase() || '?');
+  return `<span>${letter}</span>${url ? `<img src="${url}" alt="" onerror="this.remove()">` : ''}`;
+}
+
+function renderSongs(animateIds) {
+  const list = $('songList');
+  $('emptyState').style.display = songs.length ? 'none' : 'block';
+  let n = 0;
+  list.innerHTML = songs.map(s => {
+    const enter = animateIds && animateIds.has(s.id);
+    return `
+    <div class="song-item ${s.id === currentId ? 'active' : ''} ${enter ? 'enter' : ''}" data-id="${s.id}" style="--i:${enter ? n++ : 0}">
+      <button class="menu-btn" data-menu="${s.id}" aria-label="منو">⋮</button>
+      <div class="song-info"><div class="song-title">${esc(s.title)}</div></div>
+      <div class="cover" style="background:${gradFor(s.title)}">${coverHTML(s)}</div>
+    </div>`;
+  }).join('');
+  updateBottomPadding();
+}
+function updateBottomPadding() {
+  document.body.style.paddingBottom = currentId !== null ? '160px' : '100px';
+  $('fabBtn').style.bottom = currentId !== null ? '110px' : '24px';
+}
+$('songList').addEventListener('click', e => {
+  const menu = e.target.closest('[data-menu]');
+  if (menu) { e.stopPropagation(); openActionSheet(Number(menu.dataset.menu)); return; }
+  const item = e.target.closest('.song-item');
+  if (item) playSong(Number(item.dataset.id));
+});
+
+/* ================= افزودن (بدون لودینگ) ================= */
+function openModal() {
+  clearPending();
+  $('songFile').value = '';
+  $('saveBtn').disabled = true;
+  $('addModal').classList.add('show');
+}
+function closeModal() { $('addModal').classList.remove('show'); clearPending(); }
+function clearPending() {
+  pending.forEach(p => p.url && URL.revokeObjectURL(p.url));
+  pending = [];
+  $('pendingList').innerHTML = '';
+}
+$('fabBtn').onclick = openModal;
+$('cancelBtn').onclick = closeModal;
+$('saveBtn').onclick = saveSongs;
+
+$('songFile').addEventListener('change', async e => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  clearPending();
+  // استخراج کاور همه فایل‌ها به‌صورت موازی
+  const covers = await Promise.all(files.map(f => extractCover(f).catch(() => null)));
+  pending = files.map((file, i) => ({ file, cover: covers[i], url: covers[i] ? URL.createObjectURL(covers[i]) : null }));
+  $('pendingList').innerHTML = pending.map((p, i) => {
+    const title = p.file.name.replace(/\.[^/.]+$/, '');
+    return `<div class="pending-item" style="--i:${i}">
+      <div class="cover" style="background:${gradFor(title)}"><span>${esc(title.charAt(0).toUpperCase())}</span>${p.url ? `<img src="${p.url}" alt="">` : ''}</div>
+      <div class="name">${esc(title)}<br><small style="color:${p.cover ? '#22a55e' : '#999'}">${p.cover ? 'کاور پیدا شد ✓' : 'کاوری پیدا نشد'}</small></div>
+    </div>`;
+  }).join('');
+  $('saveBtn').disabled = pending.length === 0;
+});
+
+async function saveSongs() {
+  if (!pending.length) return;
+  let base = Date.now();
+  const newSongs = pending.map(p => ({
+    id: base++,
+    title: p.file.name.replace(/\.[^/.]+$/, ''),
+    blob: p.file,
+    type: p.file.type || 'audio/mpeg',
+    cover: p.cover || null
+  }));
+  // فوراً به لیست اضافه و مودال بسته می‌شود؛ ذخیره در پس‌زمینه
+  songs.push(...newSongs);
+  renderSongs(new Set(newSongs.map(s => s.id)));
+  closeModal();
+  for (const song of newSongs) {
+    try { await dbPut(song); }
+    catch (e1) {
+      try {
+        const copy = { ...song, blob: new Blob([await song.blob.arrayBuffer()], { type: song.type }) };
+        await dbPut(copy);
+      } catch (e2) {
+        try { await dbPut({ ...song, cover: null }); }
+        catch (e3) { alert('خطا در ذخیره: ' + song.title); }
+      }
+    }
+  }
+}
+
+/* ================= پخش ================= */
+function setMiniCover(song) {
+  const inner = $('miniCoverInner');
+  const url = coverUrl(song);
+  const letter = esc((song.title || '?').trim().charAt(0).toUpperCase() || '?');
+  inner.style.background = url ? '#fff' : gradFor(song.title);
+  inner.innerHTML = url
+    ? `<img src="${url}" alt="" onerror="this.remove()">`
+    : `<span>${letter}</span>`;
+}
+
+function updatePlayerUI(song, instant) {
+  const els = ['fpCover', 'miniCover', 'miniTitle', 'fpTitle'].map($);
+  const apply = () => {
+    $('fpCover').style.background = gradFor(song.title);
+    $('fpCover').innerHTML = coverHTML(song);
+    $('miniTitle').textContent = song.title;
+    $('fpTitle').textContent = song.title;
+    setMiniCover(song);
+    els.forEach(el => {
+      el.classList.remove('fade-out', 'pop');
+      void el.offsetWidth;
+      el.classList.add('pop');
+    });
+  };
+  if (instant) { apply(); return; }
+  els.forEach(el => el.classList.add('fade-out'));
+  setTimeout(apply, 150);
+}
+
+function showMini() {
+  if (miniPlayer.style.display === 'flex') return false;
+  miniPlayer.style.display = 'flex';
+  miniPlayer.animate(
+    [{ transform: 'translateY(120px) scale(.7)', opacity: 0 }, { transform: 'translateY(0) scale(1)', opacity: 1 }],
+    { duration: 650, easing: 'cubic-bezier(.34,1.56,.64,1)' }
+  );
+  return true;
+}
+
+function playSong(id) {
+  const song = songs.find(s => s.id === id);
+  if (!song) return;
+  if (currentId === id && audio.src) { togglePlay(); return; }
+
+  if (audio.dataset.blobUrl) URL.revokeObjectURL(audio.dataset.blobUrl);
+  let url;
+  try {
+    url = URL.createObjectURL(song.blob);
+    audio.dataset.blobUrl = url;
+  } catch (e) { alert('خطا در باز کردن فایل.'); return; }
+
+  audio.src = url;
+  currentId = id;
+
+  const first = showMini();
+  updatePlayerUI(song, first);
+  progressFill.style.width = '0%';
+  currentTimeEl.textContent = '0:00';
+  totalTimeEl.textContent = '0:00';
+  renderSongs();
+  setupMediaSession(song);
+
+  const p = audio.play();
+  if (p !== undefined) {
+    p.catch(err => {
+      if (err.name === 'NotSupportedError') alert('این فایل قابل پخش نیست.');
+      updatePlayButtons(false);
+    });
+  }
+}
+
+function updatePlayButtons(playing) {
+  const changed = playing !== isPlayingState || !$('miniPlayBtn').innerHTML;
+  isPlayingState = playing;
+  document.body.classList.toggle('is-playing', playing);
+  if (!changed) return;
+  $('miniPlayBtn').innerHTML = playing ? ICON_PAUSE_MINI : ICON_PLAY_MINI;
+  $('fpPlayBtn').innerHTML = playing ? ICON_PAUSE_BIG : ICON_PLAY_BIG;
+}
+
+function togglePlay() {
+  if (currentId === null || !audio.src) { if (songs.length) playSong(songs[0].id); return; }
+  if (audio.paused) {
+    const p = audio.play();
+    if (p !== undefined) p.catch(() => updatePlayButtons(false));
+  } else audio.pause();
+}
+
+function step(dir) {
+  if (!songs.length) return;
+  let i = songs.findIndex(s => s.id === currentId);
+  i = (i + dir + songs.length) % songs.length;
+  playSong(songs[i].id);
+}
+const nextSong = () => step(1), prevSong = () => step(-1);
+
+$('miniPlayBtn').onclick = e => { e.stopPropagation(); togglePlay(); };
+$('fpPlayBtn').onclick = togglePlay;
+$('fpPrev').onclick = prevSong;
+$('fpNext').onclick = nextSong;
+$('fpClose').onclick = () => closeFullPlayer();
+
+audio.addEventListener('error', () => {
+  if (!audio.getAttribute('src')) return;
+  updatePlayButtons(false);
+});
+audio.addEventListener('play', () => updatePlayButtons(true));
+audio.addEventListener('pause', () => updatePlayButtons(false));
+audio.addEventListener('ended', nextSong);
+
+/* ================= اکولایزر زنده (واکنش به صدای آهنگ) ================= */
+let actx = null, analyser = null, freqData = null, eqRaf = null;
+const eqBars = Array.from(document.querySelectorAll('.eq i'));
+const eqLevels = [0, 0, 0];
+const eqFloor = [0, 0, 0];
+const eqCeil = [60, 40, 30];
+// با fftSize=1024 هر بین حدود ۴۳ هرتز است: باس (راست‌ترین میله)، میانی، زیر
+const EQ_BANDS = [[1, 4], [6, 40], [40, 200]];
+
+function initAnalyser() {
+  if (analyser) { if (actx.state === 'suspended') actx.resume(); return; }
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    actx = new AC();
+    const src = actx.createMediaElementSource(audio);
+    analyser = actx.createAnalyser();
+    analyser.fftSize = 1024;
+    analyser.smoothingTimeConstant = 0.35;
+    freqData = new Uint8Array(analyser.frequencyBinCount);
+    src.connect(analyser);
+    analyser.connect(actx.destination);
+  } catch (e) { console.warn('analyser failed', e); analyser = null; }
+}
+function eqLoop() {
+  eqRaf = requestAnimationFrame(eqLoop);
+  if (!analyser) return;
+  analyser.getByteFrequencyData(freqData);
+  for (let b = 0; b < 3; b++) {
+    const [s, e] = EQ_BANDS[b];
+    let sum = 0;
+    for (let i = s; i < e; i++) sum += freqData[i];
+    const raw = sum / (e - s);
+    // کف و سقف اخیر هر باند: کف دره‌های بین ضربه‌ها، سقف قله ضربه‌هاست
+    if (raw > eqCeil[b]) eqCeil[b] = raw; else eqCeil[b] -= (eqCeil[b] - eqFloor[b]) * 0.012;
+    if (raw < eqFloor[b]) eqFloor[b] = raw; else eqFloor[b] += (eqCeil[b] - eqFloor[b]) * 0.012;
+    const range = Math.max(eqCeil[b] - eqFloor[b], 22);
+    let v = (raw - eqFloor[b]) / range;
+    v = Math.max(0, Math.min(1, v));
+    v = Math.pow(v, 1.25);
+    // بالا رفتن سریع، پایین آمدن نسبتاً سریع
+    eqLevels[b] += (v - eqLevels[b]) * (v > eqLevels[b] ? 0.75 : 0.28);
+    eqBars[b].style.height = (3 + eqLevels[b] * 11) + 'px';
+  }
+}
+function startEq() { initAnalyser(); if (!eqRaf) eqLoop(); }
+function stopEq() {
+  if (eqRaf) cancelAnimationFrame(eqRaf);
+  eqRaf = null;
+  // فرود نرم به حالت آرام
+  const fall = () => {
+    let any = false;
+    for (let b = 0; b < 3; b++) {
+      eqLevels[b] *= 0.8;
+      if (eqLevels[b] < 0.01) eqLevels[b] = 0; else any = true;
+      eqBars[b].style.height = (3 + eqLevels[b] * 11) + 'px';
+    }
+    if (any && !eqRaf) requestAnimationFrame(fall);
+  };
+  fall();
+}
+audio.addEventListener('play', startEq);
+audio.addEventListener('pause', stopEq);
+audio.addEventListener('ended', stopEq);
+
+/* ================= نوار پیشرفت ================= */
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration || seeking) return;
+  progressFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+  totalTimeEl.textContent = formatTime(audio.duration);
+});
+audio.addEventListener('loadedmetadata', () => {
+  totalTimeEl.textContent = formatTime(audio.duration);
+});
+function seekFromEvent(e) {
+  if (!audio.duration) return;
+  const r = progressBar.getBoundingClientRect();
+  let ratio = (r.right - e.clientX) / r.width;
+  ratio = Math.min(1, Math.max(0, ratio));
+  progressFill.style.width = ratio * 100 + '%';
+  currentTimeEl.textContent = formatTime(ratio * audio.duration);
+  return ratio;
+}
+progressBar.addEventListener('pointerdown', e => {
+  seeking = true; progressBar.classList.add('active');
+  progressBar.setPointerCapture(e.pointerId); seekFromEvent(e);
+});
+progressBar.addEventListener('pointermove', e => { if (seeking) seekFromEvent(e); });
+progressBar.addEventListener('pointerup', e => {
+  if (!seeking) return;
+  const ratio = seekFromEvent(e);
+  seeking = false; progressBar.classList.remove('active');
+  if (ratio !== undefined) audio.currentTime = ratio * audio.duration;
+});
+progressBar.addEventListener('pointercancel', () => { seeking = false; progressBar.classList.remove('active'); });
+
+/* ================= Media Session ================= */
+function setupMediaSession(song) {
+  if (!('mediaSession' in navigator)) return;
+  const url = coverUrl(song);
+  const art = [];
+  if (url && typeof song.cover !== 'string') art.push({ src: url, sizes: '512x512', type: song.cover.type });
+  navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: '', album: '', artwork: art });
+  navigator.mediaSession.setActionHandler('play', () => audio.play());
+  navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+  navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+  navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+}
+
+/* ================= منوی سه نقطه ================= */
+function openActionSheet(id) {
+  const s = songs.find(x => x.id === id);
+  if (!s) return;
+  sheetSongId = id;
+  $('sheetTitle').textContent = s.title;
+  $('actionSheet').classList.add('show');
+  $('sheetOverlay').classList.add('show');
+}
+function closeActionSheet() {
+  $('actionSheet').classList.remove('show');
+  $('sheetOverlay').classList.remove('show');
+}
+$('sheetOverlay').onclick = closeActionSheet;
+$('sheetCancelBtn').onclick = closeActionSheet;
+$('sheetPlayBtn').onclick = () => { const id = sheetSongId; closeActionSheet(); if (id !== null) playSong(id); };
+$('sheetDeleteBtn').onclick = async () => {
+  const id = sheetSongId;
+  if (id === null || !confirm('این آهنگ حذف بشه؟')) return;
+  try {
+    await dbDelete(id);
+    songs = songs.filter(s => s.id !== id);
+    if (coverUrls.has(id)) { URL.revokeObjectURL(coverUrls.get(id)); coverUrls.delete(id); }
+    if (id === currentId) {
+      audio.pause();
+      if (audio.dataset.blobUrl) { URL.revokeObjectURL(audio.dataset.blobUrl); delete audio.dataset.blobUrl; }
+      audio.removeAttribute('src'); audio.load();
+      currentId = null;
+      fullPlayer.classList.remove('show');
+      miniPlayer.style.transform = '';
+      const a = miniPlayer.animate(
+        [{ transform: 'translateY(0) scale(1)', opacity: 1 }, { transform: 'translateY(120px) scale(.7)', opacity: 0 }],
+        { duration: 300, easing: 'cubic-bezier(.4,0,.2,1)' }
+      );
+      a.onfinish = () => { miniPlayer.style.display = 'none'; };
+    }
+    renderSongs();
+    closeActionSheet();
+  } catch (err) { alert('خطا در حذف: ' + err.message); }
+};
+
+/* ================= Ripple ================= */
+function addRipple(e, btn) {
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left - size / 2;
+  const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top - size / 2;
+  const circle = document.createElement('span');
+  circle.className = 'ripple-circle';
+  circle.style.width = circle.style.height = size + 'px';
+  circle.style.left = x + 'px';
+  circle.style.top = y + 'px';
+  btn.appendChild(circle);
+  setTimeout(() => circle.remove(), 600);
+}
+function attachRipple(el) {
+  el.addEventListener('pointerdown', e => addRipple(e, el));
+}
+['fpPlayBtn', 'fpPrev', 'fpNext', 'fpClose'].forEach(id => attachRipple($(id)));
+attachRipple($('miniPlayBtn'));
+
+/* ================= کشیدن کپسول / پلیر تمام‌صفحه ================= */
+const MINI_HIDDEN_OFFSET = 150;
+
+function openFullPlayer() {
+  if (currentId === null) return;
+  fullPlayer.getAnimations().forEach(a => a.cancel());
+  miniPlayer.getAnimations().forEach(a => a.cancel());
+  fullPlayer.classList.remove('dragging');
+  fullPlayer.style.transform = '';
+  fullPlayer.classList.add('show');
+  miniPlayer.classList.add('hidden-ui');
+  miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET}px)`;
+}
+function closeFullPlayer() {
+  fullPlayer.getAnimations().forEach(a => a.cancel());
+  miniPlayer.getAnimations().forEach(a => a.cancel());
+  fullPlayer.classList.remove('dragging');
+  fullPlayer.classList.remove('show');
+  miniPlayer.classList.remove('hidden-ui');
+  fullPlayer.style.transform = '';
+  miniPlayer.style.transform = '';
+}
+
+let miniDragging = false, miniStartY = 0, miniStartX = 0, miniMoved = false;
+const MINI_MAX_DRAG = 120, MINI_OPEN_THRESHOLD = 40;
+
+function miniDown(x, y, target) {
+  if (target.closest('.bp-play-btn')) return;
+  miniDragging = true; miniMoved = false;
+  miniStartY = y; miniStartX = x;
+  miniPlayer.classList.add('dragging');
+}
+function miniMove(x, y) {
+  if (!miniDragging) return;
+  const dy = y - miniStartY;
+  const dx = Math.abs(x - miniStartX);
+  if (Math.abs(dy) > 5 || dx > 5) miniMoved = true;
+  if (dy < 0) {
+    let visualDy = -dy;
+    if (visualDy > MINI_MAX_DRAG) visualDy = MINI_MAX_DRAG + (visualDy - MINI_MAX_DRAG) * 0.15;
+    // کپسول هنگام کشیدن کمی کش می‌آید
+    const stretch = 1 + Math.min(visualDy / 900, 0.08);
+    miniPlayer.style.transform = `translateY(${-visualDy}px) scale(${stretch})`;
+  }
+}
+function miniUp(x, y) {
+  if (!miniDragging) return;
+  miniDragging = false;
+  miniPlayer.classList.remove('dragging');
+  miniPlayer.style.transform = '';
+  const dy = y - miniStartY;
+  const dx = Math.abs(x - miniStartX);
+  if (dy < -MINI_OPEN_THRESHOLD && Math.abs(dy) > dx) { openFullPlayer(); return; }
+  if (!miniMoved || (Math.abs(dy) + dx) < 8) openFullPlayer();
+}
+
+miniPlayer.addEventListener('touchstart', e => { const t = e.touches[0]; miniDown(t.clientX, t.clientY, e.target); }, { passive: true });
+miniPlayer.addEventListener('touchmove', e => { const t = e.touches[0]; miniMove(t.clientX, t.clientY); }, { passive: true });
+miniPlayer.addEventListener('touchend', e => { const t = e.changedTouches[0]; miniUp(t.clientX, t.clientY); }, { passive: true });
+miniPlayer.addEventListener('touchcancel', () => { miniDragging = false; miniPlayer.classList.remove('dragging'); miniPlayer.style.transform = ''; });
+miniPlayer.addEventListener('mousedown', e => miniDown(e.clientX, e.clientY, e.target));
+document.addEventListener('mousemove', e => { if (miniDragging) miniMove(e.clientX, e.clientY); });
+document.addEventListener('mouseup', e => { if (miniDragging) miniUp(e.clientX, e.clientY); });
+
+let fpDragging = false;
+let fpStartY = 0, fpStartX = 0, fpStartTime = 0, fpMoved = false, fpIsClosingPull = false;
+let fpScrollStart = 0, fpLastY = 0, fpLastTime = 0, fpVelocity = 0, fpCurrentOffset = 0;
+const FP_CLOSE_DISTANCE = 100, FP_CLOSE_VELOCITY = 0.8;
+
+function fpDown(x, y, target) {
+  if (target.closest('button') || target.closest('.progress-bar')) return;
+  fullPlayer.getAnimations().forEach(a => a.cancel());
+  miniPlayer.getAnimations().forEach(a => a.cancel());
+  fpDragging = true; fpMoved = false; fpIsClosingPull = false;
+  fpStartY = y; fpStartX = x; fpStartTime = Date.now();
+  fpLastY = y; fpLastTime = Date.now(); fpVelocity = 0;
+  fpScrollStart = fpScroll.scrollTop; fpCurrentOffset = 0;
+  fullPlayer.style.transform = '';
+  fullPlayer.classList.add('dragging');
+  if (!miniPlayer.classList.contains('hidden-ui')) miniPlayer.classList.add('hidden-ui');
+  miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET}px)`;
+}
+function fpMove(x, y) {
+  if (!fpDragging) return;
+  const now = Date.now();
+  const dy = y - fpStartY;
+  const dx = Math.abs(x - fpStartX);
+  if (Math.abs(dy) > 5 || dx > 5) fpMoved = true;
+  const dt = now - fpLastTime;
+  if (dt > 0) fpVelocity = (y - fpLastY) / dt;
+  fpLastY = y; fpLastTime = now;
+  const atTop = fpScroll.scrollTop <= 0;
+  if (dy > 0 && (atTop || fpScrollStart <= 0)) {
+    fpIsClosingPull = true;
+    fpCurrentOffset = dy;
+    fullPlayer.style.transform = `translateY(${dy}px)`;
+    const winH = window.innerHeight;
+    const progress = Math.min(dy / (winH * 0.7), 1);
+    miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET * (1 - progress)}px)`;
+  } else {
+    fpIsClosingPull = false;
+    fpCurrentOffset = 0;
+    fpScroll.scrollTop = fpScrollStart - dy;
+    fullPlayer.style.transform = '';
+    miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET}px)`;
+  }
+}
+function fpUp(x, y) {
+  if (!fpDragging) return;
+  const wasClosingPull = fpIsClosingPull;
+  const dy = y - fpStartY;
+  const totalTime = Date.now() - fpStartTime;
+  const avgVelocity = totalTime > 0 ? dy / totalTime : 0;
+  fpDragging = false; fpIsClosingPull = false;
+  fullPlayer.classList.remove('dragging');
+  if (wasClosingPull) {
+    const enoughDistance = dy > FP_CLOSE_DISTANCE;
+    const fastFlick = (fpVelocity > FP_CLOSE_VELOCITY || avgVelocity > FP_CLOSE_VELOCITY) && dy > 60;
+    const winH = window.innerHeight;
+    const fpStartYPos = fpCurrentOffset;
+    const progress = Math.min(fpStartYPos / (winH * 0.7), 1);
+    const miniFrom = MINI_HIDDEN_OFFSET * (1 - progress);
+    fullPlayer.style.transform = '';
+    miniPlayer.style.transform = `translateY(${miniFrom}px)`;
+    if (enoughDistance || fastFlick) {
+      const fpAnim = fullPlayer.animate(
+        [{ transform: `translateY(${fpStartYPos}px)` }, { transform: 'translateY(100%)' }],
+        { duration: 340, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' }
+      );
+      miniPlayer.animate(
+        [{ transform: `translateY(${miniFrom}px)` }, { transform: 'translateY(0)' }],
+        { duration: 500, easing: 'cubic-bezier(.34,1.56,.64,1)', fill: 'forwards' }
+      );
+      fpAnim.onfinish = () => {
+        miniPlayer.classList.remove('hidden-ui');
+        fullPlayer.classList.remove('show');
+        fullPlayer.style.transform = '';
+        miniPlayer.style.transform = '';
+        fullPlayer.getAnimations().forEach(a => a.cancel());
+        miniPlayer.getAnimations().forEach(a => a.cancel());
+      };
+    } else {
+      fullPlayer.animate(
+        [{ transform: `translateY(${fpStartYPos}px)` }, { transform: 'translateY(0)' }],
+        { duration: 450, easing: 'cubic-bezier(.34,1.4,.64,1)', fill: 'forwards' }
+      );
+      const miniAnim = miniPlayer.animate(
+        [{ transform: `translateY(${miniFrom}px)` }, { transform: `translateY(${MINI_HIDDEN_OFFSET}px)` }],
+        { duration: 350, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' }
+      );
+      miniAnim.onfinish = () => {
+        miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET}px)`;
+        fullPlayer.style.transform = '';
+        fullPlayer.getAnimations().forEach(a => a.cancel());
+        miniAnim.cancel();
+      };
+    }
+  } else {
+    fullPlayer.style.transform = '';
+    miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET}px)`;
+  }
+}
+fullPlayer.addEventListener('touchstart', e => { const t = e.touches[0]; fpDown(t.clientX, t.clientY, e.target); }, { passive: true });
+fullPlayer.addEventListener('touchmove', e => { if (!fpDragging) return; e.preventDefault(); const t = e.touches[0]; fpMove(t.clientX, t.clientY); }, { passive: false });
+fullPlayer.addEventListener('touchend', e => { if (!fpDragging) return; const t = e.changedTouches[0]; fpUp(t.clientX, t.clientY); });
+fullPlayer.addEventListener('touchcancel', () => {
+  if (!fpDragging) return;
+  fpDragging = false; fpIsClosingPull = false;
+  fullPlayer.classList.remove('dragging');
+  fullPlayer.style.transform = '';
+  miniPlayer.style.transform = `translateY(${MINI_HIDDEN_OFFSET}px)`;
+});
+fullPlayer.addEventListener('mousedown', e => {
+  if (e.target.closest('button') || e.target.closest('.progress-bar')) return;
+  fpDown(e.clientX, e.clientY, e.target);
+});
+document.addEventListener('mousemove', e => { if (fpDragging) fpMove(e.clientX, e.clientY); });
+document.addEventListener('mouseup', e => { if (fpDragging) fpUp(e.clientX, e.clientY); });
+fullPlayer.addEventListener('wheel', e => { fpScroll.scrollTop += e.deltaY; }, { passive: true });
+</script>
+</body>
+</html>
