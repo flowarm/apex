@@ -1,76 +1,894 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f5f7f4">
-  
-  <!-- تایتل اصلی (فقط همین یکی باشه!) -->
+
   <title>Apex | فضای هوشمند ابزارها و ایده‌های تازه</title>
-  
-  <!-- تگ تأیید گوگل (پاکش نکن) -->
+
   <meta name="google-site-verification" content="U69kiaT_jcUzC9aJ-3HOxPb-cpXrW0PV9z5Yq2O22V4" />
-  
-  <!-- ===== تگ‌های سئو برای گوگل ===== -->
+
   <meta name="description" content="با Apex همه ابزارهای کاربردی رو یک‌جا داشته باش! از مدیریت زمان و مطالعه با StudyFlow تا امکاناتی که کار و زندگی رو ساده‌تر می‌کنن. همین حالا شروع کن!">
-  <meta name="keywords" content="Apex, ابزارهای هوشمند, StudyFlow, مدیریت زمان, مطالعه, برنامه ریزی, ایده‌های تازه">
-  
-  <!-- ===== تگ‌های Open Graph ===== -->
+  <meta name="keywords" content="Apex, ابزارهای هوشمند, StudyFlow, Appverse, مدیریت زمان, مطالعه, برنامه ریزی, ایده‌های تازه">
+
   <meta property="og:title" content="Apex | فضای هوشمند ابزارها و ایده‌های تازه">
   <meta property="og:description" content="همه ابزارهای کاربردی که نیاز داری، یک‌جا و بدون پیچیدگی. همین حالا کشف کن!">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://flowarm.github.io/apex/">
   <meta property="og:image" content="https://flowarm.github.io/apex/android-chrome-512x512.png">
-  
-  <!-- ===== تگ‌های توییتر (X) ===== -->
+
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Apex | فضای هوشمند ابزارها">
   <meta name="twitter:description" content="ابزارهای کاربردی، ساده و یکپارچه. همین حالا Apex رو کشف کن.">
   <meta name="twitter:image" content="https://flowarm.github.io/apex/android-chrome-512x512.png">
-  
-  <!-- ===== Favicon ها ===== -->
+
   <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
   <link rel="icon" type="image/x-icon" href="./favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="./android-chrome-512x512.png">
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
-:root{--bg:#f5f7f4;--paper:#fff;--paper2:#edf4f0;--line:#dfe8e3;--text:#23332f;--muted:#75847e;--accent:#239b8b;--accent2:#56c6ad;--sun:#f5c96b;--coral:#f29b83;--shadow:0 14px 38px #36594c12;--ease:cubic-bezier(.2,.8,.2,1)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 90% 0%,#dcefe8 0,transparent 38%),var(--bg);color:var(--text);font-family:Vazirmatn,system-ui,sans-serif;min-height:100vh}button,a{font:inherit;color:inherit}a{text-decoration:none}button{cursor:pointer}.app{width:min(760px,100%);margin:auto;padding:20px 17px calc(115px + env(safe-area-inset-bottom))}.top{display:flex;align-items:center;justify-content:space-between;margin:5px 0 28px;animation:drop .65s var(--ease) both}.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:.2px}.logo{width:42px;height:42px;border-radius:15px;background:linear-gradient(145deg,#73d8c1,#239b8b);display:grid;place-items:center;box-shadow:0 8px 23px #239b8b25;color:#fff}.logo svg{width:23px}.brand-tag{font-size:11px;color:var(--muted);background:var(--paper);border:1px solid var(--line);padding:7px 10px;border-radius:99px}
-.greeting{margin-bottom:20px}.greeting small{color:var(--muted);font-size:12px}.greeting h1{font-size:25px;line-height:1.5;margin:4px 0 2px;font-weight:800}.greeting p{font-size:13px;color:var(--muted);margin:0}
-.hero{position:relative;overflow:hidden;border-radius:28px;padding:23px 21px 22px;background:linear-gradient(125deg,#c5eee2,#e2f6e9 62%,#fff1cc);box-shadow:0 16px 42px #71bba326;margin-bottom:25px;isolation:isolate}.hero:before,.hero:after{content:"";position:absolute;border:1px solid #ffffffa0;border-radius:50%;width:180px;height:180px;left:-74px;top:-78px;box-shadow:0 0 0 24px #ffffff32,0 0 0 52px #ffffff20;z-index:-1}.hero:after{width:100px;height:100px;left:auto;right:-36px;top:auto;bottom:-45px}.hero-content{position:relative}.hero-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #ffffff8c;background:#ffffff70;border-radius:99px;font-size:11px;color:#3b7668}.hero h2{font-size:22px;margin:14px 0 5px;line-height:1.65}.hero p{font-size:12px;line-height:1.9;color:#52756a;margin:0;max-width:440px}.hero-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:19px}.hero-cta{border:0;background:#fff;color:#267f72;padding:10px 14px;border-radius:14px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:7px;box-shadow:0 5px 18px #458e7d18;transition:transform .25s var(--ease),box-shadow .25s}.hero-cta:active{transform:scale(.96)}.hero-mark{font-size:28px;color:#439f8b;opacity:.75}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin:25px 2px 13px}.section-head h3{margin:0;font-size:16px}.section-head span{color:var(--muted);font-size:11px}.feature{display:flex;align-items:center;gap:14px;padding:15px;border:1px solid var(--line);border-radius:23px;background:var(--paper);box-shadow:var(--shadow);transition:transform .35s var(--ease),box-shadow .35s,border-color .3s}.feature:hover{transform:translateY(-4px);box-shadow:0 18px 40px #36594c17;border-color:#b7ded3}.feature:active{transform:scale(.985)}.feature-icon{width:57px;height:57px;flex:none;border-radius:19px;background:linear-gradient(145deg,#8bdcc8,#36b49e);display:grid;place-items:center;color:white;box-shadow:0 8px 22px #44b7a01c}.feature-icon svg{width:27px;height:27px}.feature-info{flex:1;min-width:0}.feature-info h4{font-size:15px;margin:0 0 4px}.feature-info p{font-size:11.5px;line-height:1.85;color:var(--muted);margin:0}.feature-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.pill{font-size:10px;border-radius:99px;padding:5px 8px;background:#eff8f4;border:1px solid #e1eee8;color:#4f8275}.arrow{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);background:#f8fbf9;border-radius:12px;color:var(--accent);flex:none}.arrow svg{width:17px}
-.principles{display:grid;grid-template-columns:1fr;gap:10px}.principle{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:19px;background:var(--paper);box-shadow:0 5px 20px #36594c08;transition:transform .3s var(--ease),box-shadow .3s}.principle:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.principle-icon{width:42px;height:42px;flex:none;border-radius:14px;background:#fff3d8;display:grid;place-items:center;color:#b98730}.principle:nth-child(2) .principle-icon{background:#e1f3ee;color:#259b8b}.principle:nth-child(3) .principle-icon{background:#ffe9e1;color:#d77a5f}.principle-icon svg{width:21px}.principle b{font-size:12px;display:block}.principle p{font-size:10.5px;line-height:1.8;color:var(--muted);margin:3px 0 0}
-.tip{margin-top:18px;padding:15px 16px;border:1px solid #e3ebdf;background:linear-gradient(120deg,#fff8e5,#fff);border-radius:20px;display:flex;gap:12px;align-items:flex-start}.tip-icon{width:35px;height:35px;flex:none;display:grid;place-items:center;border-radius:12px;background:#ffedc9;color:#bc8c38}.tip b{font-size:12px}.tip p{margin:4px 0 0;font-size:11px;line-height:1.8;color:var(--muted)}.footer-note{text-align:center;color:#8a9892;font-size:10px;margin:25px 0 0}
-.tools-view{display:none}.tools-view.show{display:block}.home-view.hide{display:none}.tools-intro{padding:19px 18px;border-radius:24px;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);margin:4px 0 22px}.tools-intro .eyebrow{font-size:11px;color:var(--accent);font-weight:700}.tools-intro h2{font-size:21px;margin:6px 0}.tools-intro p{font-size:12px;line-height:1.9;color:var(--muted);margin:0}.empty-future{margin-top:15px;border:1px dashed #c9ddd4;border-radius:20px;padding:17px;background:#f7fbf8;display:flex;gap:12px;align-items:center}.empty-future .bubble{width:40px;height:40px;border-radius:14px;background:#e7f4ed;display:grid;place-items:center;color:#4b9e87;font-size:18px}.empty-future b{font-size:12px}.empty-future p{font-size:10.5px;margin:3px 0 0;color:var(--muted)}
-.bottom{position:fixed;z-index:20;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(420px,calc(100% - 24px));display:flex;justify-content:space-around;gap:5px;padding:8px;background:#ffffffd9;border:1px solid #dce7e1;border-radius:26px;box-shadow:0 13px 38px #33584a20;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);transition:transform .42s var(--ease),opacity .32s var(--ease),filter .32s;will-change:transform,opacity}.bottom.hidden{transform:translate(-50%,calc(100% + 30px));opacity:0;filter:blur(4px);pointer-events:none}.nav{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:8px 4px;border:0;background:transparent;color:#81918a;border-radius:18px;font-size:10px;transition:background .25s,color .25s,transform .25s var(--ease)}.nav svg{width:21px;height:21px;transition:transform .3s var(--ease)}.nav.active{background:#e3f4ed;color:#258f7e}.nav.active span{font-weight:800}.nav:active{transform:scale(.92)}.nav.active svg{transform:translateY(-1px) scale(1.06)}
-/* Gentle entrance + scroll reveal */
-@keyframes drop{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}@keyframes rise{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s var(--ease),transform .65s var(--ease)}.reveal.in{opacity:1;transform:translateY(0)}.reveal.in:nth-child(2){transition-delay:.07s}.reveal.in:nth-child(3){transition-delay:.14s}.reveal.in:nth-child(4){transition-delay:.21s}.view-enter{animation:rise .42s var(--ease) both}
-@media(min-width:600px){.app{padding-top:28px}.principles{grid-template-columns:repeat(3,1fr)}.principle{align-items:flex-start;flex-direction:column}.principle-icon{margin-bottom:1px}.greeting h1{font-size:28px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
+
+:root{
+--bg:#f5f7f4;
+--paper:#fff;
+--paper2:#edf4f0;
+--line:#dfe8e3;
+--text:#23332f;
+--muted:#75847e;
+--accent:#239b8b;
+--accent2:#56c6ad;
+--sun:#f5c96b;
+--coral:#f29b83;
+--shadow:0 14px 38px #36594c12;
+--ease:cubic-bezier(.2,.8,.2,1)
+}
+
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent
+}
+
+html{scroll-behavior:smooth}
+
+body{
+margin:0;
+background:radial-gradient(ellipse at 90% 0%,#dcefe8 0,transparent 38%),var(--bg);
+color:var(--text);
+font-family:Vazirmatn,system-ui,sans-serif;
+min-height:100vh
+}
+
+button,a{font:inherit;color:inherit}
+a{text-decoration:none}
+button{cursor:pointer}
+
+.app{
+width:min(760px,100%);
+margin:auto;
+padding:20px 17px calc(115px + env(safe-area-inset-bottom))
+}
+
+.top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin:5px 0 28px;
+animation:drop .65s var(--ease) both
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:11px;
+font-weight:800;
+font-size:19px;
+letter-spacing:.2px
+}
+
+.logo{
+width:42px;
+height:42px;
+border-radius:15px;
+background:linear-gradient(145deg,#73d8c1,#239b8b);
+display:grid;
+place-items:center;
+box-shadow:0 8px 23px #239b8b25;
+color:#fff
+}
+
+.logo svg{width:23px}
+
+.brand-tag{
+font-size:11px;
+color:var(--muted);
+background:var(--paper);
+border:1px solid var(--line);
+padding:7px 10px;
+border-radius:99px
+}
+
+.greeting{margin-bottom:20px}
+.greeting small{color:var(--muted);font-size:12px}
+.greeting h1{font-size:25px;line-height:1.5;margin:4px 0 2px;font-weight:800}
+.greeting p{font-size:13px;color:var(--muted);margin:0}
+
+.hero{
+position:relative;
+overflow:hidden;
+border-radius:28px;
+padding:23px 21px 22px;
+background:linear-gradient(125deg,#c5eee2,#e2f6e9 62%,#fff1cc);
+box-shadow:0 16px 42px #71bba326;
+margin-bottom:25px;
+isolation:isolate
+}
+
+.hero:before,.hero:after{
+content:"";
+position:absolute;
+border:1px solid #ffffffa0;
+border-radius:50%;
+width:180px;
+height:180px;
+left:-74px;
+top:-78px;
+box-shadow:0 0 0 24px #ffffff32,0 0 0 52px #ffffff20;
+z-index:-1
+}
+
+.hero:after{
+width:100px;
+height:100px;
+left:auto;
+right:-36px;
+top:auto;
+bottom:-45px
+}
+
+.hero-content{position:relative}
+
+.hero-tag{
+display:inline-flex;
+align-items:center;
+gap:6px;
+padding:6px 10px;
+border:1px solid #ffffff8c;
+background:#ffffff70;
+border-radius:99px;
+font-size:11px;
+color:#3b7668
+}
+
+.hero h2{
+font-size:22px;
+margin:14px 0 5px;
+line-height:1.65
+}
+
+.hero p{
+font-size:12px;
+line-height:1.9;
+color:#52756a;
+margin:0;
+max-width:440px
+}
+
+.hero-bottom{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-top:19px
+}
+
+.hero-cta{
+border:0;
+background:#fff;
+color:#267f72;
+padding:10px 14px;
+border-radius:14px;
+font-size:12px;
+font-weight:800;
+display:flex;
+align-items:center;
+gap:7px;
+box-shadow:0 5px 18px #458e7d18;
+transition:transform .25s var(--ease),box-shadow .25s
+}
+
+.hero-cta:active{transform:scale(.96)}
+.hero-mark{font-size:28px;color:#439f8b;opacity:.75}
+
+.section-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin:25px 2px 13px
+}
+
+.section-head h3{margin:0;font-size:16px}
+.section-head span{color:var(--muted);font-size:11px}
+
+.feature{
+display:flex;
+align-items:center;
+gap:14px;
+padding:15px;
+border:1px solid var(--line);
+border-radius:23px;
+background:var(--paper);
+box-shadow:var(--shadow);
+transition:transform .35s var(--ease),box-shadow .35s,border-color .3s;
+margin-bottom:10px
+}
+
+.feature:hover{
+transform:translateY(-4px);
+box-shadow:0 18px 40px #36594c17;
+border-color:#b7ded3
+}
+
+.feature:active{transform:scale(.985)}
+
+.feature-icon{
+width:57px;
+height:57px;
+flex:none;
+border-radius:19px;
+background:linear-gradient(145deg,#8bdcc8,#36b49e);
+display:grid;
+place-items:center;
+color:white;
+box-shadow:0 8px 22px #44b7a01c
+}
+
+.feature-icon svg{width:27px;height:27px}
+
+/* آیکون اختصاصی Appverse */
+.appverse-icon{
+background:linear-gradient(145deg,#f6d982,#efb958);
+color:#78541c;
+box-shadow:0 8px 22px #e8b85820
+}
+
+.feature-info{flex:1;min-width:0}
+.feature-info h4{font-size:15px;margin:0 0 4px}
+.feature-info p{font-size:11.5px;line-height:1.85;color:var(--muted);margin:0}
+
+.feature-meta{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+margin-top:9px
+}
+
+.pill{
+font-size:10px;
+border-radius:99px;
+padding:5px 8px;
+background:#eff8f4;
+border:1px solid #e1eee8;
+color:#4f8275
+}
+
+.arrow{
+width:34px;
+height:34px;
+display:grid;
+place-items:center;
+border:1px solid var(--line);
+background:#f8fbf9;
+border-radius:12px;
+color:var(--accent);
+flex:none
+}
+
+.arrow svg{width:17px}
+
+.principles{
+display:grid;
+grid-template-columns:1fr;
+gap:10px
+}
+
+.principle{
+display:flex;
+align-items:center;
+gap:12px;
+padding:14px;
+border:1px solid var(--line);
+border-radius:19px;
+background:var(--paper);
+box-shadow:0 5px 20px #36594c08;
+transition:transform .3s var(--ease),box-shadow .3s
+}
+
+.principle:hover{
+transform:translateY(-3px);
+box-shadow:var(--shadow)
+}
+
+.principle-icon{
+width:42px;
+height:42px;
+flex:none;
+border-radius:14px;
+background:#fff3d8;
+display:grid;
+place-items:center;
+color:#b98730
+}
+
+.principle:nth-child(2) .principle-icon{
+background:#e1f3ee;
+color:#259b8b
+}
+
+.principle:nth-child(3) .principle-icon{
+background:#ffe9e1;
+color:#d77a5f
+}
+
+.principle-icon svg{width:21px}
+.principle b{font-size:12px;display:block}
+.principle p{font-size:10.5px;line-height:1.8;color:var(--muted);margin:3px 0 0}
+
+.tip{
+margin-top:18px;
+padding:15px 16px;
+border:1px solid #e3ebdf;
+background:linear-gradient(120deg,#fff8e5,#fff);
+border-radius:20px;
+display:flex;
+gap:12px;
+align-items:flex-start
+}
+
+.tip-icon{
+width:35px;
+height:35px;
+flex:none;
+display:grid;
+place-items:center;
+border-radius:12px;
+background:#ffedc9;
+color:#bc8c38
+}
+
+.tip b{font-size:12px}
+.tip p{margin:4px 0 0;font-size:11px;line-height:1.8;color:var(--muted)}
+
+.footer-note{
+text-align:center;
+color:#8a9892;
+font-size:10px;
+margin:25px 0 0
+}
+
+.tools-view{display:none}
+.tools-view.show{display:block}
+.home-view.hide{display:none}
+
+.tools-intro{
+padding:19px 18px;
+border-radius:24px;
+background:var(--paper);
+border:1px solid var(--line);
+box-shadow:var(--shadow);
+margin:4px 0 22px
+}
+
+.tools-intro .eyebrow{
+font-size:11px;
+color:var(--accent);
+font-weight:700
+}
+
+.tools-intro h2{font-size:21px;margin:6px 0}
+.tools-intro p{font-size:12px;line-height:1.9;color:var(--muted);margin:0}
+
+.empty-future{
+margin-top:15px;
+border:1px dashed #c9ddd4;
+border-radius:20px;
+padding:17px;
+background:#f7fbf8;
+display:flex;
+gap:12px;
+align-items:center
+}
+
+.empty-future .bubble{
+width:40px;
+height:40px;
+border-radius:14px;
+background:#e7f4ed;
+display:grid;
+place-items:center;
+color:#4b9e87;
+font-size:18px
+}
+
+.empty-future b{font-size:12px}
+.empty-future p{font-size:10.5px;margin:3px 0 0;color:var(--muted)}
+
+.bottom{
+position:fixed;
+z-index:20;
+bottom:max(12px,env(safe-area-inset-bottom));
+left:50%;
+transform:translateX(-50%);
+width:min(420px,calc(100% - 24px));
+display:flex;
+justify-content:space-around;
+gap:5px;
+padding:8px;
+background:#ffffffd9;
+border:1px solid #dce7e1;
+border-radius:26px;
+box-shadow:0 13px 38px #33584a20;
+backdrop-filter:blur(22px);
+-webkit-backdrop-filter:blur(22px);
+transition:transform .42s var(--ease),opacity .32s var(--ease),filter .32s;
+will-change:transform,opacity
+}
+
+.bottom.hidden{
+transform:translate(-50%,calc(100% + 30px));
+opacity:0;
+filter:blur(4px);
+pointer-events:none
+}
+
+.nav{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+gap:4px;
+padding:8px 4px;
+border:0;
+background:transparent;
+color:#81918a;
+border-radius:18px;
+font-size:10px;
+transition:background .25s,color .25s,transform .25s var(--ease)
+}
+
+.nav svg{width:21px;height:21px;transition:transform .3s var(--ease)}
+
+.nav.active{
+background:#e3f4ed;
+color:#258f7e
+}
+
+.nav.active span{font-weight:800}
+.nav:active{transform:scale(.92)}
+.nav.active svg{transform:translateY(-1px) scale(1.06)}
+
+@keyframes drop{
+from{opacity:0;transform:translateY(-12px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes rise{
+from{opacity:0;transform:translateY(22px) scale(.985)}
+to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.reveal{
+opacity:0;
+transform:translateY(22px);
+transition:opacity .65s var(--ease),transform .65s var(--ease)
+}
+
+.reveal.in{
+opacity:1;
+transform:translateY(0)
+}
+
+.reveal.in:nth-child(2){transition-delay:.07s}
+.reveal.in:nth-child(3){transition-delay:.14s}
+.reveal.in:nth-child(4){transition-delay:.21s}
+
+.view-enter{animation:rise .42s var(--ease) both}
+
+@media(min-width:600px){
+.app{padding-top:28px}
+.principles{grid-template-columns:repeat(3,1fr)}
+.principle{align-items:flex-start;flex-direction:column}
+.principle-icon{margin-bottom:1px}
+.greeting h1{font-size:28px}
+}
+
+@media(prefers-reduced-motion:reduce){
+*,*:before,*:after{
+animation-duration:.01ms!important;
+transition-duration:.01ms!important;
+scroll-behavior:auto!important
+}
+.reveal{opacity:1;transform:none}
+}
 </style>
 </head>
+
 <body>
+
 <main class="app">
-<header class="top"><div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5A2.5 2.5 0 0 1 7.5 17H20"/><path d="M7.5 3H20v18H7.5A2.5 2.5 0 0 1 5 18.5v-13A2.5 2.5 0 0 1 7.5 3Z"/><path d="M9 7h7M9 11h6"/></svg></div><span>APEX</span></div><span class="brand-tag">ایده‌ها، در جریان‌اند ✦</span></header>
+
+<header class="top">
+<div class="brand">
+<div class="logo">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M5 19.5A2.5 2.5 0 0 1 7.5 17H20"/>
+<path d="M7.5 3H20v18H7.5A2.5 2.5 0 0 1 5 18.5v-13A2.5 2.5 0 0 1 7.5 3Z"/>
+<path d="M9 7h7M9 11h6"/>
+</svg>
+</div>
+<span>APEX</span>
+</div>
+<span class="brand-tag">ایده‌ها، در جریان‌اند ✦</span>
+</header>
+
 <section class="home-view" id="homeView">
-<section class="greeting reveal"><small>به Apex خوش آمدید</small><h1>سلام، خوش اومدی 👋</h1><p>هر چیزی برای شروع یک روز بهتر، همین‌جاست.</p></section>
-<section class="hero reveal"><div class="hero-content"><div class="hero-tag"><span>✦</span> فضای یکپارچهٔ Apex</div><h2>یک جا برای ایده‌ها،<br>کارها و تجربه‌های تازه</h2><p>قابلیت‌های کاربردی رو ساده و سریع پیدا کن؛ بدون شلوغی و پیچیدگی.</p><div class="hero-bottom"><button class="hero-cta" id="exploreBtn">کشف قابلیت‌ها <span>←</span></button><span class="hero-mark">✧</span></div></div></section>
-<div class="section-head reveal" id="apps"><h3>قابلیت‌های Apex</h3><span>۱ قابلیت فعال</span></div>
-<a class="feature reveal" href="./StudyFlow_v8.html"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></div><div class="feature-info"><h4>StudyFlow</h4><p>دستیار مطالعه برای مدیریت تکالیف، برنامه‌ریزی، یادداشت‌ها، تمرکز و امتحان‌ها؛ همه در یک فضای منظم.</p><div class="feature-meta"><span class="pill">📚 مطالعه و برنامه‌ریزی</span><span class="pill">⏱️ مدیریت زمان</span></div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div></a>
-<div class="section-head reveal"><h3>نگاهی به Apex</h3><span>تجربه‌ای متفاوت</span></div><div class="principles"><article class="principle reveal"><div class="principle-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg></div><div><b>سادگی در استفاده</b><p>دسترسی آسان به قابلیت‌ها، بدون پیچیدگی‌های اضافی.</p></div></article><article class="principle reveal"><div class="principle-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8"/></svg></div><div><b>تجربه یکپارچه</b><p>امکانات متنوع در فضایی هماهنگ و منظم.</p></div></article><article class="principle reveal"><div class="principle-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 12l4 4 6-8"/><path d="M15 8h5v5"/></svg></div><div><b>همیشه در حال پیشرفت</b><p>قابلیت‌های تازه، به‌مرور به Apex اضافه می‌شوند.</p></div></article></div>
-<div class="tip reveal"><div class="tip-icon">✦</div><div><b>شروع کن، قدم‌به‌قدم پیش برو</b><p>برای انجام کارهای روزانه، قابلیت مناسب رو انتخاب کن. امکانات جدید به‌مرور به این صفحه اضافه می‌شن.</p></div></div><p class="footer-note reveal">APEX · ایده‌ها، وقتی شکل می‌گیرند، متفاوت‌اند.</p>
+
+<section class="greeting reveal">
+<small>به Apex خوش آمدید</small>
+<h1>سلام، خوش اومدی 👋</h1>
+<p>هر چیزی برای شروع یک روز بهتر، همین‌جاست.</p>
 </section>
-<section class="tools-view" id="toolsView"><div class="tools-intro reveal"><span class="eyebrow">فضای قابلیت‌ها</span><h2>ابزارهای Apex</h2><p>قابلیت‌های موجود رو یک‌جا ببین و متناسب با نیازت انتخاب کن.</p></div><div class="section-head reveal"><h3>قابلیت‌های فعال</h3><span>۱ مورد</span></div><a class="feature reveal" href="./StudyFlow_v8.html"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></div><div class="feature-info"><h4>StudyFlow</h4><p>دستیار مطالعه برای مدیریت تکالیف، برنامه‌ریزی، یادداشت‌ها، تمرکز و امتحان‌ها؛ همه در یک فضای منظم.</p><div class="feature-meta"><span class="pill">📚 مطالعه و برنامه‌ریزی</span><span class="pill">⏱️ مدیریت زمان</span></div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></div></a><div class="empty-future reveal"><div class="bubble">✧</div><div><b>قابلیت‌های بیشتر در راه‌اند</b><p>به‌زودی امکانات تازه‌ای به Apex اضافه می‌شن.</p></div></div></section>
+
+<section class="hero reveal">
+<div class="hero-content">
+<div class="hero-tag"><span>✦</span> فضای یکپارچهٔ Apex</div>
+<h2>یک جا برای ایده‌ها،<br>کارها و تجربه‌های تازه</h2>
+<p>قابلیت‌های کاربردی رو ساده و سریع پیدا کن؛ بدون شلوغی و پیچیدگی.</p>
+
+<div class="hero-bottom">
+<button class="hero-cta" id="exploreBtn">
+کشف قابلیت‌ها <span>←</span>
+</button>
+<span class="hero-mark">✧</span>
+</div>
+</div>
+</section>
+
+<div class="section-head reveal" id="apps">
+<h3>قابلیت‌های Apex</h3>
+<span>۲ قابلیت فعال</span>
+</div>
+
+<!-- قابلیت اول: StudyFlow -->
+<a class="feature reveal" href="./StudyFlow_v8.html">
+
+<div class="feature-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+<path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/>
+<path d="M8 7h8M8 11h6"/>
+</svg>
+</div>
+
+<div class="feature-info">
+<h4>StudyFlow</h4>
+<p>دستیار مطالعه برای مدیریت تکالیف، برنامه‌ریزی، یادداشت‌ها، تمرکز و امتحان‌ها؛ همه در یک فضای منظم.</p>
+
+<div class="feature-meta">
+<span class="pill">📚 مطالعه و برنامه‌ریزی</span>
+<span class="pill">⏱️ مدیریت زمان</span>
+</div>
+</div>
+
+<div class="arrow">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="m9 18 6-6-6-6"/>
+</svg>
+</div>
+</a>
+
+<!-- قابلیت دوم: Appverse -->
+<a class="feature reveal" href="./Appverse.html">
+
+<div class="feature-icon appverse-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="8" height="8" rx="2"/>
+<rect x="13" y="3" width="8" height="8" rx="2"/>
+<rect x="3" y="13" width="8" height="8" rx="2"/>
+<rect x="13" y="13" width="8" height="8" rx="2"/>
+</svg>
+</div>
+
+<div class="feature-info">
+<h4>Appverse | اپ‌ورس</h4>
+<p>دنیای اپلیکیشن‌ها و بازی‌ها؛ برنامه‌های کاربردی، بازی‌های جذاب و ابزارهای هوشمند رو پیدا کن.</p>
+
+<div class="feature-meta">
+<span class="pill">📱 اپلیکیشن‌ها</span>
+<span class="pill">🎮 بازی‌ها</span>
+</div>
+</div>
+
+<div class="arrow">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="m9 18 6-6-6-6"/>
+</svg>
+</div>
+
+</a>
+
+<div class="section-head reveal">
+<h3>نگاهی به Apex</h3>
+<span>تجربه‌ای متفاوت</span>
+</div>
+
+<div class="principles">
+
+<article class="principle reveal">
+<div class="principle-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="4" width="18" height="16" rx="3"/>
+<path d="M8 9h8M8 13h5"/>
+</svg>
+</div>
+<div>
+<b>سادگی در استفاده</b>
+<p>دسترسی آسان به قابلیت‌ها، بدون پیچیدگی‌های اضافی.</p>
+</div>
+</article>
+
+<article class="principle reveal">
+<div class="principle-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 3v18M3 12h18"/>
+<circle cx="12" cy="12" r="8"/>
+</svg>
+</div>
+<div>
+<b>تجربه یکپارچه</b>
+<p>امکانات متنوع در فضایی هماهنگ و منظم.</p>
+</div>
+</article>
+
+<article class="principle reveal">
+<div class="principle-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 18 10 12l4 4 6-8"/>
+<path d="M15 8h5v5"/>
+</svg>
+</div>
+<div>
+<b>همیشه در حال پیشرفت</b>
+<p>قابلیت‌های تازه، به‌مرور به Apex اضافه می‌شوند.</p>
+</div>
+</article>
+
+</div>
+
+<div class="tip reveal">
+<div class="tip-icon">✦</div>
+<div>
+<b>شروع کن، قدم‌به‌قدم پیش برو</b>
+<p>برای انجام کارهای روزانه، قابلیت مناسب رو انتخاب کن. امکانات جدید به‌مرور به این صفحه اضافه می‌شن.</p>
+</div>
+</div>
+
+<p class="footer-note reveal">APEX · ایده‌ها، وقتی شکل می‌گیرند، متفاوت‌اند.</p>
+
+</section>
+
+<!-- صفحه ابزارها -->
+<section class="tools-view" id="toolsView">
+
+<div class="tools-intro reveal">
+<span class="eyebrow">فضای قابلیت‌ها</span>
+<h2>ابزارهای Apex</h2>
+<p>قابلیت‌های موجود رو یک‌جا ببین و متناسب با نیازت انتخاب کن.</p>
+</div>
+
+<div class="section-head reveal">
+<h3>قابلیت‌های فعال</h3>
+<span>۲ مورد</span>
+</div>
+
+<!-- StudyFlow -->
+<a class="feature reveal" href="./StudyFlow_v8.html">
+
+<div class="feature-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+<path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z"/>
+<path d="M8 7h8M8 11h6"/>
+</svg>
+</div>
+
+<div class="feature-info">
+<h4>StudyFlow</h4>
+<p>دستیار مطالعه برای مدیریت تکالیف، برنامه‌ریزی، یادداشت‌ها، تمرکز و امتحان‌ها؛ همه در یک فضای منظم.</p>
+
+<div class="feature-meta">
+<span class="pill">📚 مطالعه و برنامه‌ریزی</span>
+<span class="pill">⏱️ مدیریت زمان</span>
+</div>
+</div>
+
+<div class="arrow">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="m9 18 6-6-6-6"/>
+</svg>
+</div>
+
+</a>
+
+<!-- Appverse -->
+<a class="feature reveal" href="./Appverse.html">
+
+<div class="feature-icon appverse-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="8" height="8" rx="2"/>
+<rect x="13" y="3" width="8" height="8" rx="2"/>
+<rect x="3" y="13" width="8" height="8" rx="2"/>
+<rect x="13" y="13" width="8" height="8" rx="2"/>
+</svg>
+</div>
+
+<div class="feature-info">
+<h4>Appverse | اپ‌ورس</h4>
+<p>دنیای اپلیکیشن‌ها و بازی‌ها؛ برنامه‌های کاربردی، بازی‌های جذاب و ابزارهای هوشمند رو پیدا کن.</p>
+
+<div class="feature-meta">
+<span class="pill">📱 اپلیکیشن‌ها</span>
+<span class="pill">🎮 بازی‌ها</span>
+</div>
+</div>
+
+<div class="arrow">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="m9 18 6-6-6-6"/>
+</svg>
+</div>
+
+</a>
+
+<div class="empty-future reveal">
+<div class="bubble">✧</div>
+<div>
+<b>قابلیت‌های بیشتر در راه‌اند</b>
+<p>به‌زودی امکانات تازه‌ای به Apex اضافه می‌شن.</p>
+</div>
+</div>
+
+</section>
+
 </main>
-<nav class="bottom" id="bottomNav" aria-label="ناوبری اصلی"><button class="nav active" id="homeTab" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10h-6v-6h-6v6H3Z"/></svg><span>خانه</span></button><button class="nav" id="toolsTab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="m8 13 2 2 5-4"/></svg><span>ابزارها</span></button></nav>
+
+<!-- نوار پایین -->
+<nav class="bottom" id="bottomNav" aria-label="ناوبری اصلی">
+
+<button class="nav active" id="homeTab" aria-current="page">
+
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+<path d="m3 10 9-7 9 7v10h-6v-6h-6v6H3Z"/>
+</svg>
+
+<span>خانه</span>
+</button>
+
+<button class="nav" id="toolsTab">
+
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+<rect x="3" y="4" width="18" height="17" rx="3"/>
+<path d="M8 2v4M16 2v4M3 9h18"/>
+<path d="m8 13 2 2 5-4"/>
+</svg>
+
+<span>ابزارها</span>
+</button>
+
+</nav>
+
 <script>
-const homeView=document.getElementById('homeView'),toolsView=document.getElementById('toolsView'),homeTab=document.getElementById('homeTab'),toolsTab=document.getElementById('toolsTab'),nav=document.getElementById('bottomNav');
-function switchView(view){const isTools=view==='tools';homeView.classList.toggle('hide',isTools);toolsView.classList.toggle('show',isTools);homeTab.classList.toggle('active',!isTools);toolsTab.classList.toggle('active',isTools);homeTab.setAttribute('aria-current',!isTools?'page':'false');toolsTab.setAttribute('aria-current',isTools?'page':'false');(isTools?toolsView:homeView).classList.remove('view-enter');void (isTools?toolsView:homeView).offsetWidth;(isTools?toolsView:homeView).classList.add('view-enter');window.scrollTo({top:0,behavior:'smooth'});observeReveals();}
-homeTab.addEventListener('click',()=>switchView('home'));toolsTab.addEventListener('click',()=>switchView('tools'));document.getElementById('exploreBtn').addEventListener('click',()=>switchView('tools'));
-let lastY=window.scrollY,scrollTick=false;function handleScroll(){const y=window.scrollY,delta=y-lastY;if(y<45){nav.classList.remove('hidden')}else if(delta>5){nav.classList.add('hidden')}else if(delta< -4){nav.classList.remove('hidden')}lastY=y;scrollTick=false}window.addEventListener('scroll',()=>{if(!scrollTick){requestAnimationFrame(handleScroll);scrollTick=true}},{passive:true});
-let observer;function observeReveals(){if(observer)observer.disconnect();observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('in');observer.unobserve(entry.target)}}),{threshold:.09,rootMargin:'0px 0px -35px 0px'});document.querySelectorAll('.reveal:not(.in)').forEach(el=>observer.observe(el))}observeReveals();
+
+const homeView=document.getElementById('homeView');
+const toolsView=document.getElementById('toolsView');
+const homeTab=document.getElementById('homeTab');
+const toolsTab=document.getElementById('toolsTab');
+const nav=document.getElementById('bottomNav');
+
+function switchView(view){
+
+const isTools=view==='tools';
+
+homeView.classList.toggle('hide',isTools);
+toolsView.classList.toggle('show',isTools);
+
+homeTab.classList.toggle('active',!isTools);
+toolsTab.classList.toggle('active',isTools);
+
+homeTab.setAttribute('aria-current',!isTools?'page':'false');
+toolsTab.setAttribute('aria-current',isTools?'page':'false');
+
+(isTools?toolsView:homeView).classList.remove('view-enter');
+
+void (isTools?toolsView:homeView).offsetWidth;
+
+(isTools?toolsView:homeView).classList.add('view-enter');
+
+window.scrollTo({
+top:0,
+behavior:'smooth'
+});
+
+observeReveals();
+
+}
+
+homeTab.addEventListener('click',()=>switchView('home'));
+toolsTab.addEventListener('click',()=>switchView('tools'));
+
+document.getElementById('exploreBtn').addEventListener('click',()=>{
+switchView('tools');
+});
+
+let lastY=window.scrollY;
+let scrollTick=false;
+
+function handleScroll(){
+
+const y=window.scrollY;
+const delta=y-lastY;
+
+if(y<45){
+nav.classList.remove('hidden');
+}else if(delta>5){
+nav.classList.add('hidden');
+}else if(delta< -4){
+nav.classList.remove('hidden');
+}
+
+lastY=y;
+scrollTick=false;
+
+}
+
+window.addEventListener('scroll',()=>{
+if(!scrollTick){
+requestAnimationFrame(handleScroll);
+scrollTick=true;
+}
+},{passive:true});
+
+let observer;
+
+function observeReveals(){
+
+if(observer)observer.disconnect();
+
+observer=new IntersectionObserver(entries=>
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add('in');
+observer.unobserve(entry.target);
+}
+}),{
+threshold:.09,
+rootMargin:'0px 0px -35px 0px'
+});
+
+document.querySelectorAll('.reveal:not(.in)').forEach(el=>
+observer.observe(el)
+);
+
+}
+
+observeReveals();
+
 </script>
+
 </body>
 </html>
